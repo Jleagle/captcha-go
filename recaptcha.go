@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-	"net"
 )
 
 const (
@@ -46,9 +45,9 @@ func Check(response string, ip string) error {
 		return ErrMissingResponse
 	}
 
-	if ip != "" && net.ParseIP(ip) == nil {
-		return ErrInvalidIP
-	}
+	//if ip != "" && net.ParseIP(ip) == nil {
+	//	return ErrInvalidIP // Does not currently work for IPs such as [::1]:64833
+	//}
 
 	// Build request
 	form := url.Values{}
