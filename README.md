@@ -1,19 +1,19 @@
 # recaptcha-go
 
 ```go
-package main
-
 import "github.com/Jleagle/recaptcha-go"
 
-err := recaptcha.CheckFromRequest(r)
-if err != nil {
-    e, ok := err.(recaptcha.Error)
-    if ok {
-        if e.IsUserError() {
-            return err.Error()
-        }else{
-            logger.Error(e)
+func FormHandler(w http.ResponseWriter, r *http.Request) {
+
+    err = recaptcha.CheckFromRequest(r)
+    if err != nil {
+        if err == recaptcha.ErrNotChecked {
+            return ErrInvalidCaptcha
+        } else {
+            logger.Error(err)
+            return err
         }
     }
+
 }
 ```
