@@ -3,8 +3,8 @@ package recaptcha
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
@@ -45,9 +45,9 @@ func Check(response string, ip string) error {
 		return ErrMissingResponse
 	}
 
-	//if ip != "" && net.ParseIP(ip) == nil {
-	//	return ErrInvalidIP // Does not currently work for IPs such as [::1]:64833
-	//}
+	// if ip != "" && net.ParseIP(ip) == nil {
+	// 	return ErrInvalidIP // Does not currently work for IPs such as [::1]:64833
+	// }
 
 	// Build request
 	form := url.Values{}
