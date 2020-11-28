@@ -1,3 +1,3 @@
-module github.com/Jleagle/recaptcha-go
+module github.com/Jleagle/captcha-go
 
 go 1.13
