@@ -30,7 +30,7 @@ func New(provider captcha, privateKey, publicKey string) Provider {
 		return nil
 	}
 
-	c.setKeys(publicKey, privateKey)
+	c.setKeys(privateKey, publicKey)
 
 	return c
 }

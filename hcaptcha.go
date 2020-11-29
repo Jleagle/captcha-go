@@ -22,8 +22,8 @@ var (
 
 type hcaptchaClient struct {
 	client     *http.Client
-	publicKey  string
 	privateKey string
+	publicKey  string
 }
 
 func (c hcaptchaClient) CheckRequest(r *http.Request) (resp *Response, err error) {
@@ -111,8 +111,8 @@ func (c *hcaptchaClient) SetClient(client *http.Client) {
 }
 
 func (c *hcaptchaClient) setKeys(private, public string) {
-	c.publicKey = public
 	c.privateKey = private
+	c.publicKey = public
 }
 
 type hcaptchaResponse struct {
