@@ -36,9 +36,9 @@ func New(provider captcha, privateKey, publicKey string) Provider {
 }
 
 type Provider interface {
-	checkRequest(r *http.Request) (resp *Response, err error)
-	checkPost(post string, ip string) (resp *Response, err error)
-	setClient(client *http.Client)
+	CheckRequest(r *http.Request) (resp *Response, err error)
+	CheckPost(post string, ip string) (resp *Response, err error)
+	SetClient(client *http.Client)
 	setKeys(private, public string)
 }
 
@@ -55,7 +55,7 @@ func Middleware(provider Provider, errorHandler http.HandlerFunc) func(http.Hand
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			resp, err := provider.checkRequest(r)
+			resp, err := provider.CheckRequest(r)
 			if err != nil {
 				r = r.WithContext(context.WithValue(r.Context(), MiddlewareErrKey, err))
 				next.ServeHTTP(w, r)

@@ -26,16 +26,16 @@ type hcaptchaClient struct {
 	privateKey string
 }
 
-func (c hcaptchaClient) checkRequest(r *http.Request) (resp *Response, err error) {
+func (c hcaptchaClient) CheckRequest(r *http.Request) (resp *Response, err error) {
 
 	if err := r.ParseForm(); err != nil {
 		return nil, err
 	}
 
-	return c.checkPost(r.PostForm.Get("h-captcha-response"), r.RemoteAddr)
+	return c.CheckPost(r.PostForm.Get("h-captcha-response"), r.RemoteAddr)
 }
 
-func (c hcaptchaClient) checkPost(post string, ip string) (ret *Response, err error) {
+func (c hcaptchaClient) CheckPost(post string, ip string) (ret *Response, err error) {
 
 	// Build request
 	form := url.Values{}
@@ -106,7 +106,7 @@ func (c hcaptchaClient) checkPost(post string, ip string) (ret *Response, err er
 	return ret, nil
 }
 
-func (c *hcaptchaClient) setClient(client *http.Client) {
+func (c *hcaptchaClient) SetClient(client *http.Client) {
 	c.client = client
 }
 
