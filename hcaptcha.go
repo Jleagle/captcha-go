@@ -48,7 +48,7 @@ func (c hcaptchaClient) CheckPost(post string, ip string) (ret *Response, err er
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	// Make request
 	if c.client == nil {
