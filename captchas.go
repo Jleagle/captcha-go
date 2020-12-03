@@ -3,7 +3,6 @@ package captcha
 import (
 	"context"
 	"net/http"
-	"time"
 )
 
 type captcha int8
@@ -43,7 +42,7 @@ type Provider interface {
 }
 
 type Response struct {
-	Time     time.Time
+	Time     string
 	HostName string
 	Errors   []error
 	Success  bool

@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"time"
 )
 
 var (
@@ -116,11 +115,11 @@ func (c *hcaptchaClient) setKeys(private, public string) {
 }
 
 type hcaptchaResponse struct {
-	Success     bool      `json:"success"`      // is the passcode valid, and does it meet security criteria you specified, e.g. sitekey?
-	ChallengeTS time.Time `json:"challenge_ts"` // timestamp of the captcha (ISO format yyyy-MM-dd'T'HH:mm:ssZZ)
-	Hostname    string    `json:"hostname"`     // the hostname of the site where the captcha was solved
-	Credit      bool      `json:"credit"`       // optional: whether the response will be credited
-	ErrorCodes  []string  `json:"error-codes"`  // optional: any error codes
-	Score       float64   `json:"score"`        // ENTERPRISE feature: a score denoting malicious activity.
-	Reason      []string  `json:"score_reason"` // ENTERPRISE feature: reason(s) for score. See BotStop.com for details.
+	Success     bool     `json:"success"`      // is the passcode valid, and does it meet security criteria you specified, e.g. sitekey?
+	ChallengeTS string   `json:"challenge_ts"` // timestamp of the captcha (ISO format yyyy-MM-dd'T'HH:mm:ssZZ)
+	Hostname    string   `json:"hostname"`     // the hostname of the site where the captcha was solved
+	Credit      bool     `json:"credit"`       // optional: whether the response will be credited
+	ErrorCodes  []string `json:"error-codes"`  // optional: any error codes
+	Score       float64  `json:"score"`        // ENTERPRISE feature: a score denoting malicious activity.
+	Reason      []string `json:"score_reason"` // ENTERPRISE feature: reason(s) for score. See BotStop.com for details.
 }
