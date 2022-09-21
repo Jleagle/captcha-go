@@ -115,4 +115,6 @@ type recaptchaResponse struct {
 	ChallengeTS string   `json:"challenge_ts"`
 	Hostname    string   `json:"hostname"`
 	ErrorCodes  []string `json:"error-codes"`
+	Score       float32  `json:"score"`
+	Action      float32  `json:"action"`
 }
