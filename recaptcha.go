@@ -75,7 +75,10 @@ func (c *reCaptchaClient) CheckPost(post string, ip string) (ret *Response, err 
 	ret = &Response{
 		Time:     recaptchaResponse.ChallengeTS,
 		HostName: recaptchaResponse.Hostname,
+		Errors:   nil,
 		Success:  recaptchaResponse.Success,
+		Score:    recaptchaResponse.Score,
+		Action:   recaptchaResponse.Action,
 	}
 
 	if len(recaptchaResponse.ErrorCodes) > 0 {
@@ -111,10 +114,10 @@ func (c *reCaptchaClient) setKeys(private, public string) {
 }
 
 type recaptchaResponse struct {
-	Success     bool     `json:"success"`
-	ChallengeTS string   `json:"challenge_ts"`
-	Hostname    string   `json:"hostname"`
-	ErrorCodes  []string `json:"error-codes"`
-	Score       float32  `json:"score"`
-	Action      float32  `json:"action"`
+	Success     bool     `json:"success"`      //
+	ChallengeTS string   `json:"challenge_ts"` //
+	Hostname    string   `json:"hostname"`     //
+	ErrorCodes  []string `json:"error-codes"`  //
+	Score       float32  `json:"score"`        // V3
+	Action      string   `json:"action"`       // V3
 }

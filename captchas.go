@@ -48,7 +48,8 @@ type Response struct {
 	HostName string
 	Errors   []error
 	Success  bool
-	Credit   bool
+	Score    float32
+	Action   string
 }
 
 //goland:noinspection GoUnusedExportedFunction
