@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -59,7 +59,7 @@ func (c reCaptchaClient) CheckPost(post string, ip string) (ret *Response, err e
 	defer resp.Body.Close()
 
 	// Read response
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
