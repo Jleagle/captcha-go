@@ -15,6 +15,7 @@ var (
 	ErrRecaptchaMissingResponse = errors.New("response is missing")
 	ErrRecaptchaInvalidResponse = errors.New("response is invalid")
 	ErrRecaptchaBadRequest      = errors.New("request is invalid")
+	ErrRecaptchaTimeout         = errors.New("request timed out")
 )
 
 type reCaptchaClient struct {
@@ -85,6 +86,7 @@ func (c reCaptchaClient) CheckPost(post string, ip string) (ret *Response, err e
 			"missing-input-response": ErrRecaptchaMissingResponse,
 			"invalid-input-response": ErrRecaptchaInvalidResponse,
 			"bad-request":            ErrRecaptchaBadRequest,
+			"timeout-or-duplicate":   ErrRecaptchaTimeout,
 		}
 
 		for _, errorCode := range recaptchaResponse.ErrorCodes {
