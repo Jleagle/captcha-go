@@ -15,7 +15,9 @@ const (
 	MiddlewareErrKey = "captcha-error"
 )
 
+// New creates a new captcha instance
 // publicKey is just used by hCaptcha
+//
 //goland:noinspection GoUnusedExportedFunction
 func New(provider captcha, privateKey, publicKey string) Provider {
 
