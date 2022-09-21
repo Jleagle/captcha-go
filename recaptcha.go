@@ -23,7 +23,7 @@ type reCaptchaClient struct {
 	privateKey string
 }
 
-func (c reCaptchaClient) CheckRequest(r *http.Request) (*Response, error) {
+func (c *reCaptchaClient) CheckRequest(r *http.Request) (*Response, error) {
 
 	if err := r.ParseForm(); err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (c reCaptchaClient) CheckRequest(r *http.Request) (*Response, error) {
 	return c.CheckPost(r.PostForm.Get("g-recaptcha-response"), r.RemoteAddr)
 }
 
-func (c reCaptchaClient) CheckPost(post string, ip string) (ret *Response, err error) {
+func (c *reCaptchaClient) CheckPost(post string, ip string) (ret *Response, err error) {
 
 	// Build request
 	form := url.Values{}
