@@ -1,13 +1,13 @@
 package captcha
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"errors"
-	"io"
 	"net/http"
 	"net/url"
 )
+
+const recaptchaEndpoint = "https://www.google.com/recaptcha/api/siteverify"
 
 var (
 	ErrRecaptchaMissingSecret   = errors.New("secret is missing")
@@ -18,8 +18,17 @@ var (
 	ErrRecaptchaTimeout         = errors.New("request timed out")
 )
 
+var recaptchaErrorMap = map[string]error{
+	"missing-input-secret":   ErrRecaptchaMissingSecret,
+	"invalid-input-secret":   ErrRecaptchaInvalidSecret,
+	"missing-input-response": ErrRecaptchaMissingResponse,
+	"invalid-input-response": ErrRecaptchaInvalidResponse,
+	"bad-request":            ErrRecaptchaBadRequest,
+	"timeout-or-duplicate":   ErrRecaptchaTimeout,
+}
+
 type reCaptchaClient struct {
-	client     *http.Client
+	baseClient
 	privateKey string
 }
 
@@ -29,95 +38,19 @@ func (c *reCaptchaClient) CheckRequest(r *http.Request) (*Response, error) {
 		return nil, err
 	}
 
-	return c.CheckPost(r.PostForm.Get("g-recaptcha-response"), r.RemoteAddr)
+	return c.CheckPostWithContext(r.Context(), r.PostForm.Get("g-recaptcha-response"), stripPort(r.RemoteAddr))
 }
 
-func (c *reCaptchaClient) CheckPost(post string, ip string) (ret *Response, err error) {
+func (c *reCaptchaClient) CheckPost(post string, ip string) (*Response, error) {
+	return c.CheckPostWithContext(context.Background(), post, ip)
+}
 
-	// Build request
+func (c *reCaptchaClient) CheckPostWithContext(ctx context.Context, post string, ip string) (*Response, error) {
+
 	form := url.Values{}
 	form.Add("secret", c.privateKey)
 	form.Add("response", post)
 	form.Add("remoteip", ip)
 
-	req, err := http.NewRequest("POST", "https://www.google.com/recaptcha/api/siteverify", bytes.NewBufferString(form.Encode()))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
-
-	// Make request
-	if c.client == nil {
-		c.client = http.DefaultClient
-	}
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	//goland:noinspection GoUnhandledErrorResult
-	defer resp.Body.Close()
-
-	// Read response
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var recaptchaResponse recaptchaResponse
-	err = json.Unmarshal(b, &recaptchaResponse)
-	if err != nil {
-		return nil, err
-	}
-
-	// Build new response
-	ret = &Response{
-		Time:     recaptchaResponse.ChallengeTS,
-		HostName: recaptchaResponse.Hostname,
-		Errors:   nil,
-		Success:  recaptchaResponse.Success,
-		Score:    recaptchaResponse.Score,
-		Action:   recaptchaResponse.Action,
-	}
-
-	if len(recaptchaResponse.ErrorCodes) > 0 {
-
-		var errorMap = map[string]error{
-			"missing-input-secret":   ErrRecaptchaMissingSecret,
-			"invalid-input-secret":   ErrRecaptchaInvalidSecret,
-			"missing-input-response": ErrRecaptchaMissingResponse,
-			"invalid-input-response": ErrRecaptchaInvalidResponse,
-			"bad-request":            ErrRecaptchaBadRequest,
-			"timeout-or-duplicate":   ErrRecaptchaTimeout,
-		}
-
-		for _, errorCode := range recaptchaResponse.ErrorCodes {
-			if err, ok := errorMap[errorCode]; ok {
-				ret.Errors = append(ret.Errors, err)
-			} else {
-				ret.Errors = append(ret.Errors, errors.New(errorCode))
-			}
-		}
-	}
-
-	return ret, nil
-}
-
-func (c *reCaptchaClient) SetClient(client *http.Client) {
-	c.client = client
-}
-
-//goland:noinspection GoUnusedParameter
-func (c *reCaptchaClient) setKeys(private, public string) {
-	c.privateKey = private
-}
-
-type recaptchaResponse struct {
-	Success     bool     `json:"success"`      //
-	ChallengeTS string   `json:"challenge_ts"` //
-	Hostname    string   `json:"hostname"`     //
-	ErrorCodes  []string `json:"error-codes"`  //
-	Score       float32  `json:"score"`        // V3
-	Action      string   `json:"action"`       // V3
+	return c.verify(ctx, form, recaptchaErrorMap)
 }
